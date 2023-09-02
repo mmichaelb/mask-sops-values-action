@@ -2,13 +2,31 @@
 
 A simple GitHub Composite Action that adds every value found in a SOPS file as masked values to the current job. Useful if you manage secrets inside a SOPS file and not inside GitHub Action Secrets variables.
 
-== Usage
+== Inputs
 
-tbd
+=== `sops-file`
+
+*Required* The path to the SOPS file that should be used for masking.
+
+=== `sops-age-key`
+
+*Required* The age key that should be used for decrypting the SOPS file.
+
+== Example usage
+
+[source, yaml]
+----
+- name: Add masks for sops values
+  uses: mmichaelb/mask-sops-values-action@v1
+  with:
+    sops-file: ./secrets.json
+    sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+----
 
 == Limitations
 
 * only tested with strings inside json sops files
+* at the moment, only SOPS files using age encryption/decryption are supported
 
 WARNING: Event though this GitHub action seems to mask all values there is no guarantee that sensitive values will still be printed in the GitHub Actions log. Please use this action with caution and test it thoroughly before using it with production secrets.
 
