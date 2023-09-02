@@ -3,10 +3,12 @@ on: [ push ]
 jobs:
   test-action-print-variables:
     runs-on: ubuntu-22.04
-    env:
-      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
     permissions:
       actions: read
+    env:
+      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+    outputs:
+      job_id: ${{ steps.print_sensitive_variables.outputs.job_id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -15,15 +17,42 @@ jobs:
         with:
           sops-file: ./test_assets/secrets.json
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+      - name: Get Current Job Log URL
+        uses: Tiryoh/gha-jobid-action@v0
+        id: jobs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          job_name: "${{ github.job }}"
       - name: Print some sensitive variables
+        id: print_sensitive_variables
         run: |
           echo "User password:Summer2019"
           echo "Oh no hopefully nobody finds this sensitive value: donotfindthissupersecretstring! That would be a catastrophe!"
+          echo "job_id=${{ steps.jobs.outputs.job_id }}" >> $GITHUB_OUTPUT
         shell: bash
+  test-action-check-logs:
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+    needs:
+      - test-action-print-variables
+    steps:
       - name: Retrieve the workflow run
+        env:
+          PREVIOUS_JOB_ID: ${{ needs.test-action-print-variables.outputs.job_id }}
         run: |
-          curl --request GET \
-          --url https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+          echo "previous job id: $PREVIOUS_JOB_ID"
+          job_log=$(curl --request GET -L \
+          --url "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$PREVIOUS_JOB_ID/logs" \
           --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --fail
+          --header 'content-type: application/vnd.github+json' \
+          --fail)
+          if echo $job_log | grep "donotfindthissupersecretstring\!"; then
+            echo "found sensitive value \"donotfindthissupersecretstring!\" in job log!"
+            exit 1
+          fi
+          if echo $job_log | grep "Summer2019"; then
+            echo "found sensitive value \"Summer2019\" in job log!"
+            exit 1
+          fi
+        shell: bash
