@@ -1,0 +1,16 @@
+= Mask SOPS Values Action
+
+A simple GitHub Composite Action that adds every value found in a SOPS file as masked values to the current job. Useful if you manage secrets inside a SOPS file and not inside GitHub Action Secrets variables.
+
+== Usage
+
+tbd
+
+== Limitations
+
+* only tested with json sops files
+
+== References
+
+* https://github.com/FiloSottile/age[age File Encryption]
+* https://github.com/getsops/sops[sops]
