@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+    permissions:
+      actions: read
     steps:
       - name: Checkout code
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -18,3 +20,10 @@ jobs:
           echo "User password:Summer2019"
           echo "Oh no hopefully nobody finds this sensitive value: donotfindthissupersecretstring! That would be a catastrophe!"
         shell: bash
+      - name: Retrieve the workflow run
+        run: |
+          curl --request GET \
+          --url https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --fail
