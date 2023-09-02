@@ -8,7 +8,9 @@ tbd
 
 == Limitations
 
-* only tested with json sops files
+* only tested with strings inside json sops files
+
+WARNING: Event though this GitHub action seems to mask all values there is no guarantee that sensitive values will still be printed in the GitHub Actions log. Please use this action with caution and test it thoroughly before using it with production secrets.
 
 == References
 

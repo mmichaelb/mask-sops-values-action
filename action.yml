@@ -1,0 +1,31 @@
+name: 'Add masks for SOPS values'
+description: 'This composite action reads all values of a specified SOPS file and adds them as masks to the current job.'
+inputs:
+  sops-file:
+    description: 'Path to SOPS file'
+    required: true
+  sops-age-key:
+    description: 'The SOPS age key to use for decryption'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Setup age
+      uses: alessiodionisi/setup-age-action@v1.2.1
+    - run: age --version
+      shell: bash
+    - name: Sops Binary Installer
+      uses: mdgreenwald/mozilla-sops-action@v1.4.1
+    - run: sops --version
+      shell: bash
+    - name: Add masks for sops values
+      env:
+        SOPS_AGE_KEY: ${{ inputs.sops-age-key }}
+      run: |
+        (
+          set +x
+          set -eo pipefail
+          sops -d ${{ inputs.sops-file }} | jq -c -r '.. | strings' | xargs -I{} echo "::add-mask::{}"
+          set +eo
+        )
+      shell: bash
