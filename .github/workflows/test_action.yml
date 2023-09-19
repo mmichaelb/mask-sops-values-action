@@ -18,7 +18,7 @@ jobs:
           sops-file: ./test_assets/secrets.json
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
       - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@v0
+        uses: Tiryoh/gha-jobid-action@v1
         id: jobs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
