@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup age
-      uses: alessiodionisi/setup-age-action@v1.2.1
+      uses: alessiodionisi/setup-age-action@v1.3.0
     - run: age --version
       shell: bash
     - name: Sops Binary Installer
