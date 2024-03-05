@@ -15,7 +15,7 @@ runs:
     - run: age --version
       shell: bash
     - name: Sops Binary Installer
-      uses: mdgreenwald/mozilla-sops-action@v1.5.0
+      uses: mdgreenwald/mozilla-sops-action@v1.6.0
     - run: sops --version
       shell: bash
     - name: Add masks for sops values
