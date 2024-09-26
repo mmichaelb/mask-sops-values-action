@@ -2,7 +2,7 @@ name: Test action
 on: [ push ]
 jobs:
   test-action-print-variables:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
     env:
@@ -31,7 +31,7 @@ jobs:
           echo "job_id=${{ steps.jobs.outputs.job_id }}" >> $GITHUB_OUTPUT
         shell: bash
   test-action-check-logs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
     needs:
